@@ -83,6 +83,284 @@ User clicks a party button
 Vote count updates
 Sort parties by votes (DESC order)
 Re-render UI
+
+
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Dynamic Election Ranking System</title>
+
+  <style>
+    *{
+      margin:0;
+      padding:0;
+      box-sizing:border-box;
+      font-family: Arial, sans-serif;
+    }
+
+    body{
+      background:#f4f4f4;
+      padding:30px;
+    }
+
+    h1{
+      text-align:center;
+      margin-bottom:30px;
+      color:#333;
+    }
+
+    .container{
+      display:flex;
+      gap:30px;
+    }
+
+    .left,
+    .right{
+      flex:1;
+      background:white;
+      padding:20px;
+      border-radius:10px;
+      box-shadow:0 0 10px rgba(0,0,0,0.1);
+    }
+
+    .buttons{
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+      margin-bottom:20px;
+    }
+
+    button{
+      padding:12px 20px;
+      border:none;
+      border-radius:6px;
+      cursor:pointer;
+      background:#007bff;
+      color:white;
+      font-size:16px;
+      transition:0.3s;
+    }
+
+    button:hover{
+      background:#0056b3;
+    }
+
+    .reset-btn{
+      background:red;
+      margin-top:20px;
+    }
+
+    .reset-btn:hover{
+      background:darkred;
+    }
+
+    h2{
+      margin-bottom:15px;
+      color:#444;
+    }
+
+    ul{
+      list-style:none;
+    }
+
+    li{
+      padding:10px;
+      margin-bottom:8px;
+      background:#f1f1f1;
+      border-radius:5px;
+    }
+
+    .leader{
+      background:gold;
+      font-weight:bold;
+      color:black;
+    }
+
+    .history-item{
+      background:#e8f5e9;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Dynamic Election Ranking System</h1>
+
+  <div class="container">
+
+    <!-- LEFT COLUMN -->
+    <div class="left">
+
+      <h2>Vote Here</h2>
+
+      <div class="buttons" id="buttonContainer">
+      </div>
+
+      <h2>Voting History</h2>
+
+      <ul id="historyList"></ul>
+
+      <button class="reset-btn" id="resetBtn">Reset Election</button>
+
+    </div>
+
+    <!-- RIGHT COLUMN -->
+    <div class="right">
+
+      <h2>Results</h2>
+
+      <ul id="resultsList"></ul>
+
+    </div>
+
+  </div>
+
+  <script>
+
+    // PARTY DATA
+    const parties = [
+      { name: "Party A", votes: 0 },
+      { name: "Party B", votes: 0 },
+      { name: "Party C", votes: 0 },
+      { name: "Party D", votes: 0 },
+      { name: "Party E", votes: 0 }
+    ];
+
+    // DOM ELEMENTS
+    const buttonContainer = document.getElementById("buttonContainer");
+    const resultsList = document.getElementById("resultsList");
+    const historyList = document.getElementById("historyList");
+    const resetBtn = document.getElementById("resetBtn");
+
+    // CREATE BUTTONS
+    function createButtons(){
+
+      buttonContainer.innerHTML = "";
+
+      parties.forEach((party, index) => {
+
+        const btn = document.createElement("button");
+
+        btn.innerText = party.name;
+
+        // EVENT HANDLER
+        btn.addEventListener("click", function(){
+
+          voteParty(index);
+
+        });
+
+        buttonContainer.appendChild(btn);
+
+      });
+
+    }
+
+    // VOTE FUNCTION
+    function voteParty(index){
+
+      // IF / ELSE LOGIC
+      if(index === 0){
+        parties[0].votes++;
+      }
+      else if(index === 1){
+        parties[1].votes++;
+      }
+      else if(index === 2){
+        parties[2].votes++;
+      }
+      else if(index === 3){
+        parties[3].votes++;
+      }
+      else{
+        parties[4].votes++;
+      }
+
+      // ADD HISTORY
+      const historyItem = document.createElement("li");
+
+      historyItem.classList.add("history-item");
+
+      historyItem.innerText = `Vote → ${parties[index].name}`;
+
+      historyList.prepend(historyItem);
+
+      // UPDATE UI
+      renderResults();
+
+    }
+
+    // RENDER RESULTS
+    function renderResults(){
+
+      resultsList.innerHTML = "";
+
+      // TOTAL VOTES
+      let totalVotes = 0;
+
+      parties.forEach(party => {
+        totalVotes += party.votes;
+      });
+
+      // SORT PARTIES
+      parties.sort((a, b) => b.votes - a.votes);
+
+      // DISPLAY RESULTS USING LOOP
+      parties.forEach((party, index) => {
+
+        const li = document.createElement("li");
+
+        // CALCULATE PERCENTAGE
+        let percentage = 0;
+
+        if(totalVotes > 0){
+          percentage = ((party.votes / totalVotes) * 100).toFixed(1);
+        }
+
+        li.innerHTML = `
+          ${index + 1}. ${party.name}
+          <br>
+          Votes: ${party.votes}
+          <br>
+          Percentage: ${percentage}%
+        `;
+
+        // HIGHLIGHT LEADER
+        if(index === 0 && party.votes > 0){
+          li.classList.add("leader");
+        }
+
+        resultsList.appendChild(li);
+
+      });
+
+    }
+
+    // RESET FUNCTION
+    resetBtn.addEventListener("click", function(){
+
+      parties.forEach(party => {
+        party.votes = 0;
+      });
+
+      historyList.innerHTML = "";
+
+      renderResults();
+
+    });
+
+    // INITIAL LOAD
+    createButtons();
+    renderResults();
+
+  </script>
+
+</body>
+</html>
 Update percentage values
 Highlight leading party
 
